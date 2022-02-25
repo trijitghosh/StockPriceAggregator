@@ -1,24 +1,36 @@
 package com.celfocus.job;
 
 import com.celfocus.job.task.Task;
-import org.apache.kafka.streams.StreamsBuilder;
-
 import java.util.Properties;
 
-public class DefaultJob implements Job{
 
-    Task task;
-    Properties properties;
-    StreamsBuilder builder;
+import org.apache.kafka.streams.KafkaStreams;
+import org.apache.kafka.streams.StreamsBuilder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-    DefaultJob(Task task, Properties properties, StreamsBuilder builder){
-        this.task = task;
-        this.properties = properties;
-        this.builder = builder;
-    }
+public class DefaultJob implements Job {
 
-    public void launch() {
-        task.init(this.properties, this.builder);
-        task.run();
-    }
+  Task task;
+  Properties properties;
+  KafkaStreams kafkaStreams;
+  private static final Logger log = LoggerFactory.getLogger(DefaultJob.class);
+  final StreamsBuilder builder = new StreamsBuilder();
+
+  public DefaultJob(Task task, Properties properties) {
+    this.task = task;
+    this.properties = properties;
+  }
+
+  public void launch() {
+    log.info("Initializing task");
+    task.init(this.properties, this.builder);
+
+    log.info("Running task");
+    task.run();
+
+    this.kafkaStreams = new KafkaStreams(builder.build(), properties);
+    kafkaStreams.start();
+    Runtime.getRuntime().addShutdownHook(new Thread(kafkaStreams::close));
+  }
 }

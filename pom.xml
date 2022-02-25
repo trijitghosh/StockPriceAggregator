@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xmlns="http://maven.apache.org/POM/4.0.0"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
@@ -9,13 +9,15 @@
     <version>1.0-SNAPSHOT</version>
 
     <properties>
-        <maven.compiler.source>11</maven.compiler.source>
-        <maven.compiler.target>11</maven.compiler.target>
+        <maven.compiler.source>1.8</maven.compiler.source>
+        <maven.compiler.target>1.8</maven.compiler.target>
         <java.version>1.8</java.version>
         <plugin.maven.compiler.version>3.10.0</plugin.maven.compiler.version>
         <plugin.build.helper.maven.version>3.3.0</plugin.build.helper.maven.version>
         <plugin.maven.remote.version>1.7.0</plugin.maven.remote.version>
         <avro.version>1.11.0</avro.version>
+        <plugin.maven.checkstyle.version>3.1.2</plugin.maven.checkstyle.version>
+        <slf4j.version>1.7.36</slf4j.version>
     </properties>
 
     <build>
@@ -71,7 +73,8 @@
                             <imports>
                                 <import>${project.build.directory}/maven-shared-archive-resources/</import>
                             </imports>
-                            <sourceDirectory>${project.basedir}/src/main/resources</sourceDirectory> <!-- not used, only imports folder is used -->
+                            <sourceDirectory>${project.basedir}/src/main/resources
+                            </sourceDirectory> <!-- not used, only imports folder is used -->
                             <stringType>String</stringType>
                             <createSetters>true</createSetters>
                             <enableDecimalLogicalType>true</enableDecimalLogicalType>
@@ -102,6 +105,29 @@
                     </execution>
                 </executions>
             </plugin>
+            <!-- enforce code checkStyle on compilation -->
+            <!-- https://mvnrepository.com/artifact/org.apache.maven.plugins/maven-checkstyle-plugin -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-checkstyle-plugin</artifactId>
+                <version>${plugin.maven.checkstyle.version}</version>
+                <configuration>
+                    <configLocation>checkStyle.xml</configLocation>
+                    <encoding>UTF-8</encoding>
+                    <consoleOutput>true</consoleOutput>
+                    <failsOnError>true</failsOnError>
+                    <linkXRef>false</linkXRef>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>validate</id>
+                        <phase>validate</phase>
+                        <goals>
+                            <goal>check</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
         </plugins>
     </build>
 
@@ -127,6 +153,19 @@
             <artifactId>avro</artifactId>
             <version>${avro.version}</version>
         </dependency>
+        <!-- for logging -->
+        <!-- https://mvnrepository.com/artifact/org.slf4j/slf4j-api -->
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <version>${slf4j.version}</version>
+        </dependency>
+        <!-- https://mvnrepository.com/artifact/org.slf4j/slf4j-log4j12 -->
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-reload4j</artifactId>
+            <version>${slf4j.version}</version>
+        </dependency>
     </dependencies>
-    
+
 </project>
